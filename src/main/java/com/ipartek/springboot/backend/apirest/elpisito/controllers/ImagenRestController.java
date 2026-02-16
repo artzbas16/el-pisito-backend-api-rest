@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ipartek.springboot.backend.apirest.elpisito.dtos.ImagenDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Imagen;
+import com.ipartek.springboot.backend.apirest.elpisito.enumerators.EntidadImagen;
 import com.ipartek.springboot.backend.apirest.elpisito.services.ImagenServiceImpl;
-import com.ipartek.springboot.backend.apirest.elpisito.utilities.EntidadImagen;
 
 @RestController
 @RequestMapping("/api")

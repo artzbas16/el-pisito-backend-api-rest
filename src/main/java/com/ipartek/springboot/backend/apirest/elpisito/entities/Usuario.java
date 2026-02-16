@@ -1,6 +1,6 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
-import com.ipartek.springboot.backend.apirest.elpisito.utilities.Rol;
+import com.ipartek.springboot.backend.apirest.elpisito.enumerators.Rol;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

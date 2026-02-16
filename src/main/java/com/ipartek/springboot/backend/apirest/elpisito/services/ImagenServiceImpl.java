@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.ipartek.springboot.backend.apirest.elpisito.dtos.ImagenDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Imagen;
+import com.ipartek.springboot.backend.apirest.elpisito.enumerators.EntidadImagen;
 import com.ipartek.springboot.backend.apirest.elpisito.repositories.ImagenRepository;
-import com.ipartek.springboot.backend.apirest.elpisito.utilities.EntidadImagen;
 
 import jakarta.persistence.EntityNotFoundException;
 

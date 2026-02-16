@@ -1,4 +1,4 @@
-package com.ipartek.springboot.backend.apirest.elpisito.utilities;
+package com.ipartek.springboot.backend.apirest.elpisito.enumerators;
 
 public enum EntidadImagen {
 	

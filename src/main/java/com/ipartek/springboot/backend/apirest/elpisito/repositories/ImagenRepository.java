@@ -4,10 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Imagen;
+import com.ipartek.springboot.backend.apirest.elpisito.enumerators.EntidadImagen;
+
 import java.util.List;
 import java.util.Optional;
-
-import com.ipartek.springboot.backend.apirest.elpisito.utilities.EntidadImagen;
 
 
 @Repository
