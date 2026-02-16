@@ -1,15 +1,13 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,20 +22,23 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity 
-@Table(name="operaciones")
-public class Operacion {
+@Table(name="banners_carousel")
+public class BannerCarousel {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//Identity es un incremental para MySQL
 	@Column
 	private Long id;
 	
-	@Column(unique = true)
-	private String nombre;//VENTA, ALQUILER, TRASPASO,...
+	@Column
+	private String titular;
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "operacion")
-	private List<Inmueble> inmuebles;
+	@Column 
+	private String claim;
+	
+	//Inversa de la relacion con Usuario
+	@ManyToMany(mappedBy = "bannersCarousel")
+	private Set<Tematica> tamaticas; //(en las que esta el banner)
 	
 	@Column
 	private Integer activo;
@@ -46,5 +47,5 @@ public class Operacion {
 	public void prePersist() {
 		if (activo == null) activo = 1;
 	}
-	
+
 }

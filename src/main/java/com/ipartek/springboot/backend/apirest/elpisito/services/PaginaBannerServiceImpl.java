@@ -29,7 +29,7 @@ public class PaginaBannerServiceImpl {
 		Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new EntityNotFoundException("El banner con id " + bannerId + " no existe, por lo tanto no podemos incluir el banner en la pagina "+ paginaId));
 		
 		pagina.getBannersPagina().add(banner);//Aqui añadimos el banner
-		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD
+		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD y se puede producir una excepcion (intentar crear una relacion que ya existe)
 		
 		return bannerToBannerDTO(banner, paginaId);
 	}

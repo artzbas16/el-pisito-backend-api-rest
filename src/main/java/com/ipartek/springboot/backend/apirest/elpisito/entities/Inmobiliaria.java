@@ -1,10 +1,15 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -36,7 +41,9 @@ public class Inmobiliaria {
 	@Column
 	private String representante;
 	
-	
+	@JsonIgnore
+	@OneToMany(mappedBy = "inmobiliaria")
+	private List<Inmueble> inmuebles;
 	
 	@Column
 	private Integer activo;

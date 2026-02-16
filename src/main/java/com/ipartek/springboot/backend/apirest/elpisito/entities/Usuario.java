@@ -1,5 +1,8 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ipartek.springboot.backend.apirest.elpisito.enumerators.Rol;
 
 import jakarta.persistence.Column;
@@ -9,6 +12,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -53,6 +59,17 @@ public class Usuario {
 	@Column
 	//@Builder.Default
 	private Integer activo;
+	
+	//Elegimos Usuario como entidad dominante de la relacion con Inmueble: es el Usuario el que 
+	//"toma la decision" de favoritar un inmueble y no al reves
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(
+			name = "usuario-inmueble",
+			joinColumns = {@JoinColumn(name="usuario_id")},
+			inverseJoinColumns = {@JoinColumn(name="inmueble_id")}
+			)
+	private Set<Inmueble> inmueblesFavoritos; //Este es el mappedBy de Inmueble
 	
 	
 	//Esta funcion es llamada automaticamente cuando se crea un nuevo objeto
