@@ -1,10 +1,13 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,16 +22,22 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity 
-@Table(name="tipos")
-public class Tipo {
+@Table(name="banners")
+public class Banner {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//Identity es un incremental para MySQL
 	@Column
 	private Long id;
 	
-	@Column(unique = true)
-	private String nombre;//PISO, CHALET, CHALET ADOSADO,...
+	@Column
+	private String titular;
+	
+	@Column
+	private String claim;
+	
+	@Column
+	private String link;
 	
 	@Column
 	private Integer activo;
@@ -38,4 +47,8 @@ public class Tipo {
 		if (activo == null) activo = 1;
 	}
 	
+	//Inversa de la relacion porque hemos tomado la entidad Pagina como dominante
+	//Un banner puede estar en muchas paginas
+	@ManyToMany(mappedBy = "bannersPagina")
+	private Set<Pagina> paginasBanner;
 }

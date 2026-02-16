@@ -1,10 +1,15 @@
 package com.ipartek.springboot.backend.apirest.elpisito.entities;
 
+import java.util.Set;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,8 +24,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity 
-@Table(name="tipos")
-public class Tipo {
+@Table(name="paginas")
+public class Pagina {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//Identity es un incremental para MySQL
@@ -28,7 +33,7 @@ public class Tipo {
 	private Long id;
 	
 	@Column(unique = true)
-	private String nombre;//PISO, CHALET, CHALET ADOSADO,...
+	private String nombre;//calcula-hipoteca, 
 	
 	@Column
 	private Integer activo;
@@ -38,4 +43,17 @@ public class Tipo {
 		if (activo == null) activo = 1;
 	}
 	
+	//Hemos elegido Pagina como entidad dominante en la relacion. Es la "pagina" la que contiene los banner
+	@ManyToMany
+	@JoinTable(
+			name = "pagina-banner",
+			joinColumns = {@JoinColumn(name = "pagina_id")},
+			inverseJoinColumns = {@JoinColumn(name = "banner_id")}
+			)
+	private Set<Banner> bannersPagina;
+	
+	
 }
+
+//Esta entidad trata de recoger las paginas que son susceptibles de contener banners
+//De esta forma podemos hacer un mantenimiento dinamico de la BBDD (añadir, desactivar,...)

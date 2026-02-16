@@ -19,8 +19,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity 
-@Table(name="tipos")
-public class Tipo {
+@Table(name="inmobiliarias")
+public class Inmobiliaria {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)//Identity es un incremental para MySQL
@@ -28,7 +28,15 @@ public class Tipo {
 	private Long id;
 	
 	@Column(unique = true)
-	private String nombre;//PISO, CHALET, CHALET ADOSADO,...
+	private String nombre;//ARBETETA, GALEA, AZKORRI
+	
+	@Column
+	private String telefono;
+	
+	@Column
+	private String representante;
+	
+	
 	
 	@Column
 	private Integer activo;
@@ -37,5 +45,4 @@ public class Tipo {
 	public void prePersist() {
 		if (activo == null) activo = 1;
 	}
-	
 }

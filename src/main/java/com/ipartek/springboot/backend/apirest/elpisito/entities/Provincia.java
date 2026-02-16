@@ -34,7 +34,7 @@ public class Provincia {
 	@Column
 	private Long id;
 	
-	@Column
+	@Column(unique = true)
 	private String nombre;//BIZKAIA, BARCELONA, MADRID...
 	
 	@Column

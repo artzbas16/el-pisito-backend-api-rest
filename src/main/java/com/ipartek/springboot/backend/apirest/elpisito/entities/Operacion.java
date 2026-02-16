@@ -27,7 +27,7 @@ public class Operacion {
 	@Column
 	private Long id;
 	
-	@Column
+	@Column(unique = true)
 	private String nombre;//VENTA, ALQUILER, TRASPASO,...
 	
 	@Column
