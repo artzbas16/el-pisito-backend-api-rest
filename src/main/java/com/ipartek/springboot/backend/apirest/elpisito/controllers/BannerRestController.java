@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ipartek.springboot.backend.apirest.elpisito.dtos.BannerImagenDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Banner;
 import com.ipartek.springboot.backend.apirest.elpisito.services.BannerServiceImpl;
 
@@ -25,27 +26,27 @@ public class BannerRestController {
 	private BannerServiceImpl bannerService;
 	
 	@GetMapping("/banners")
-	public ResponseEntity<List<Banner>> findAll(){
-		return ResponseEntity.ok(bannerService.findAll()); //200
+	public ResponseEntity<List<BannerImagenDTO>> findAll(){
+		return ResponseEntity.ok(bannerService.findAllBulk()); //200
 	}
 	
 	@GetMapping("/banners-activos")
-	public ResponseEntity<List<Banner>> findAllActive(){		
-		return ResponseEntity.ok(bannerService.findAllActive()); //200
+	public ResponseEntity<List<BannerImagenDTO>> findAllActive(){		
+		return ResponseEntity.ok(bannerService.findAllActiveBulk()); //200
 	}
 	
 	@GetMapping("/banner/{id}")
-	public ResponseEntity<Banner> findById(@PathVariable Long id) {
+	public ResponseEntity<BannerImagenDTO> findById(@PathVariable Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(bannerService.findById(id));//200
 	}
 	
 	@PostMapping("/banner")
-	public ResponseEntity<Banner> create(@RequestBody Banner banner) {
+	public ResponseEntity<BannerImagenDTO> create(@RequestBody Banner banner) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.save(banner));//201
 	}
 	
 	@PutMapping("/banner")
-	public ResponseEntity<Banner> update(@RequestBody Banner banner) {
+	public ResponseEntity<BannerImagenDTO> update(@RequestBody Banner banner) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bannerService.save(banner));//201
 	}
 	

@@ -184,14 +184,30 @@ public class ApiExceptionHandler {
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public ResponseEntity<ErrorResponseDTO> httpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest req){
 		
-		String elMensaje = "El endpoint al que estas intentando acceder no existe";
+		String elMensaje = "El verbo HTTP que estás utilizando no está permitido";
 		return build(HttpStatus.METHOD_NOT_ALLOWED, elMensaje, ex, req); //405
 		
 	}
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	//PERSONALIZADAS
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@ExceptionHandler(FileStorageException.class)
+	public ResponseEntity<ErrorResponseDTO> FileStorage(HttpRequestMethodNotSupportedException ex, HttpServletRequest req){
+		
+		String elMensaje = "No ha sido posible subir el recurso";
+		return build(HttpStatus.NOT_FOUND, elMensaje, ex, req); //405
+		
+	}
 	
+	//FILE
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ErrorResponseDTO> ResourceNotFound(HttpRequestMethodNotSupportedException ex, HttpServletRequest req){
+		
+		String elMensaje = "Estas intentando acceder a un recurso fisico que no existe";
+		return build(HttpStatus.NOT_FOUND, elMensaje, ex, req); //405
+		
+	}
 
 }

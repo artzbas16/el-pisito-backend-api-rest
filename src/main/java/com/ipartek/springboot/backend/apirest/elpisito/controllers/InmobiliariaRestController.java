@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ipartek.springboot.backend.apirest.elpisito.dtos.InmobiliariaImagenDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Inmobiliaria;
 import com.ipartek.springboot.backend.apirest.elpisito.services.InmobiliariaServiceImpl;
 
@@ -25,27 +26,27 @@ public class InmobiliariaRestController {
 	private InmobiliariaServiceImpl inmobiliariaService;
 	
 	@GetMapping("/inmobiliarias")
-	public ResponseEntity<List<Inmobiliaria>> findAll(){
-		return ResponseEntity.ok(inmobiliariaService.findAll()); //200
+	public ResponseEntity<List<InmobiliariaImagenDTO>> findAll(){
+		return ResponseEntity.ok(inmobiliariaService.findAllBulk()); //200
 	}
 	
 	@GetMapping("/inmobiliarias-activas")
-	public ResponseEntity<List<Inmobiliaria>> findAllActive(){		
-		return ResponseEntity.ok(inmobiliariaService.findAllActive()); //200
+	public ResponseEntity<List<InmobiliariaImagenDTO>> findAllActive(){		
+		return ResponseEntity.ok(inmobiliariaService.findAllActiveBulk()); //200
 	}
 	
 	@GetMapping("/inmobiliaria/{id}")
-	public ResponseEntity<Inmobiliaria> findById(@PathVariable Long id) {
+	public ResponseEntity<InmobiliariaImagenDTO> findById(@PathVariable Long id) {
 		return ResponseEntity.status(HttpStatus.OK).body(inmobiliariaService.findById(id));//200
 	}
 	
 	@PostMapping("/inmobiliaria")
-	public ResponseEntity<Inmobiliaria> create(@RequestBody Inmobiliaria inmobiliaria) {
+	public ResponseEntity<InmobiliariaImagenDTO> create(@RequestBody Inmobiliaria inmobiliaria) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(inmobiliariaService.save(inmobiliaria));//201
 	}
 	
 	@PutMapping("/inmobiliaria")
-	public ResponseEntity<Inmobiliaria> update(@RequestBody Inmobiliaria inmobiliaria) {
+	public ResponseEntity<InmobiliariaImagenDTO> update(@RequestBody Inmobiliaria inmobiliaria) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(inmobiliariaService.save(inmobiliaria));//201
 	}
 	

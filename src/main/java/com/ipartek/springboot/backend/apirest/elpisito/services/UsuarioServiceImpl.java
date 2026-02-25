@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ipartek.springboot.backend.apirest.elpisito.dtos.UsuarioDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Usuario;
 import com.ipartek.springboot.backend.apirest.elpisito.mappers.UsuarioMapper;
 import com.ipartek.springboot.backend.apirest.elpisito.repositories.UsuarioRepository;
@@ -11,7 +12,7 @@ import com.ipartek.springboot.backend.apirest.elpisito.repositories.UsuarioRepos
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UsuarioServiceImpl implements GeneralService<Usuario> {
+public class UsuarioServiceImpl{
 	
 	//Una de las principales caracteristicas que puede tener un @Service
 	//es que casi todos sus atributos pueden ser repositorios
@@ -27,13 +28,12 @@ public class UsuarioServiceImpl implements GeneralService<Usuario> {
 	@Autowired
 	private UsuarioMapper usuarioMapper;
 
-	@Override
-	public List<Usuario> findAll() {
-		return usuarioRepository.findAll();
+	public List<UsuarioDTO> findAll() {
+		List<Usuario> usuarios = usuarioRepository.findAll();
+		return usuarioMapper.toDtoList(usuarios); 
 	}
 
-	@Override
-	public List<Usuario> findAllActive() {
+	public List<UsuarioDTO> findAllActive() {
 		//¿Esta haciendo la API (Servidor) un trabajo que deberia estar haciendo 
 		//la BBDD? Si. ¿Deberia estarlo haciendo? No
 		//Estamos sobrecargando el Servidor con una tarea en la que no esta especializado
@@ -43,12 +43,11 @@ public class UsuarioServiceImpl implements GeneralService<Usuario> {
 		/*return findAll().stream()
 		.filter(u -> u.getActivo().equals(1))
 		.toList();*/
-		
-		return usuarioRepository.findByActivo(1);
+		List<Usuario> usuarios = usuarioRepository.findByActivo(1);
+		return usuarioMapper.toDtoList(usuarios);
 	}
 
-	@Override
-	public Usuario save(Usuario t) {
+	public UsuarioDTO save(Usuario t) {
 		//Este metodo recibe un Usuario
 		//Si el usuario que recibimos tiene id, 
 		//hibernate considera que estamos haciendo un update
@@ -65,28 +64,32 @@ public class UsuarioServiceImpl implements GeneralService<Usuario> {
 		//Si llega con Id estoy modificando 
 		t.setPasswordOpen(t.getPassword());
 		
+		Usuario usuario = usuarioRepository.save(t);
+		
 		//DataIntegrityViolationException (campos unique)
-		return usuarioRepository.save(t);
+		return usuarioMapper.toDto(usuario);
 	}
 
-	@Override
-	public Usuario findById(Long id) {
+	public UsuarioDTO findById(Long id) {
 		//El findById recibe un Optional<Usuario>. Si la BBDD devuelve un Optional con Usuario
 		//dentro, el metodo devuelve el Usuario. SI dentro del Optional hay null se lanza una exception
 		// y el metodo, logicamente, no devuelve nada al controlador
 		
-		return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El usuario con id " + id + " no existe"));
+		Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El usuario con id " + id + " no existe"));
+		
+		return usuarioMapper.toDto(usuario);
 	}
 
-	@Override
-	public Usuario deleteById(Long id) {
+	public UsuarioDTO deleteById(Long id) {
 		Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El usuario con id " + id + " que estas intentando eliminar no existe"));
 		
 		usuarioRepository.deleteById(id);//DataAccessException (EmptyResultDataAccessException que hereda de DataAccessException)
 	
-		return usuario;
+		return usuarioMapper.toDto(usuario);
 	}
 	
+	//Este metodo trabaja con el UsuarioMapper. Recibe un Usuario de cliente (generalmente incompleto)
+	//y evita que los null que llegan de cliente no sobrescriben esos campos en la BBDD
 	public Usuario completaUsuarioRequestRespetandoNull(Usuario usuarioRequest) {
 		Usuario usuarioDB = usuarioRepository.findById(usuarioRequest.getId()).orElseThrow(() -> new EntityNotFoundException("El usuario con id " + usuarioRequest.getId() + " que estas intentando eliminar no existe"));
 		

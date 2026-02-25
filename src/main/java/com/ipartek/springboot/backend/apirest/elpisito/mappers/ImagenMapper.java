@@ -24,7 +24,7 @@ public interface ImagenMapper {
 	
 	//En una unterface de mapstruct podemos implementar metodos utilizando "default" (desde Java 8)
 	default String construirUrl(Imagen img) {
-		return "api/imagenes/" + img.getEntidadImagen() + "/" + img.getEntidadId() + "/" + img.getNombre();
+		return "api/imagenes/" + img.getEntidadImagen().name().toLowerCase() + "/" + img.getEntidadId() + "/" + img.getNombre();
 	}
 }
 

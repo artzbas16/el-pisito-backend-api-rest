@@ -2,15 +2,18 @@ package com.ipartek.springboot.backend.apirest.elpisito.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ipartek.springboot.backend.apirest.elpisito.dtos.BannerDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.dtos.BannerIdDTO;
+import com.ipartek.springboot.backend.apirest.elpisito.dtos.BannerImagenDTO;
+import com.ipartek.springboot.backend.apirest.elpisito.dtos.ImagenDTO;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Banner;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Pagina;
+import com.ipartek.springboot.backend.apirest.elpisito.enumerators.EntidadImagen;
+import com.ipartek.springboot.backend.apirest.elpisito.mappers.BannerMapper;
 import com.ipartek.springboot.backend.apirest.elpisito.repositories.BannerRepository;
 import com.ipartek.springboot.backend.apirest.elpisito.repositories.PaginaRepository;
 
@@ -24,47 +27,51 @@ public class PaginaBannerServiceImpl {
 	@Autowired
 	private BannerRepository bannerRepository;
 	
-	public BannerDTO addBannerToPagina(Long paginaId, Long bannerId) {
+	@Autowired
+	private BannerMapper bannerMapper;
+	
+	@Autowired
+	private ImagenServiceImpl imagenService;
+	
+	public BannerImagenDTO addBannerToPagina(Long paginaId, Long bannerId) {
 		Pagina pagina = paginaRepository.findById(paginaId).orElseThrow(() -> new EntityNotFoundException("La pagina con id " + paginaId + " no existe, por lo tanto no podemos incluir el banner"));
 		Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new EntityNotFoundException("El banner con id " + bannerId + " no existe, por lo tanto no podemos incluir el banner en la pagina "+ paginaId));
 		
 		pagina.getBannersPagina().add(banner);//Aqui añadimos el banner
 		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD y se puede producir una excepcion (intentar crear una relacion que ya existe)
 		
-		return bannerToBannerDTO(banner, paginaId);
+		return bannerMapper.toDto(banner, imagenService);
 	}
 	
-	public BannerDTO deleteBannerToPagina(Long paginaId, Long bannerId) {
+	public BannerImagenDTO deleteBannerToPagina(Long paginaId, Long bannerId) {
 		Pagina pagina = paginaRepository.findById(paginaId).orElseThrow(() -> new EntityNotFoundException("La pagina con id " + paginaId + " no existe, por lo tanto no podemos quitar el banner de ella"));
 		Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new EntityNotFoundException("El banner con id " + bannerId + " no existe, por lo tanto no podemos eliminar el banner en la pagina "+ paginaId));
 		
 		pagina.getBannersPagina().remove(banner);//Aqui eliminamos el banner
 		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD
 		
-		return this.bannerToBannerDTO(banner, paginaId);
+		return bannerMapper.toDto(banner, imagenService);
 	}
 	
 	//A partir de un id de Pagina devuelve todos los banners incluidos en esa Pagina
-	public List<Banner> findBannersPagina(Long paginaId){
+	public List<BannerImagenDTO> findBannersPagina(Long paginaId){
 		Pagina pagina = paginaRepository.findById(paginaId).orElseThrow(() -> new EntityNotFoundException("La pagina con id " + paginaId + " no existe"));
+		List<Banner> bannerSinImagenes =  new ArrayList<>(pagina.getBannersPagina());//El constructor del arraylist admite un set
 		
-		return new ArrayList<>(pagina.getBannersPagina()); //El constructor del arraylist admite un set
+		List<Long> ids = bannerSinImagenes.stream()		
+				.map(Banner::getId)
+				.toList();	
+		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, ids);
+		
+		return bannerMapper.toDtoBulk(bannerSinImagenes, mapaImagenes);
 	}
 	
 	//A partir de un id de Pagina devuelve solo los ids de los banners incluidos en esa Pagina
 	public List<BannerIdDTO> findBannersIdPagina(Long paginaId){
 		Pagina pagina = paginaRepository.findById(paginaId).orElseThrow(() -> new EntityNotFoundException("La pagina con id " + paginaId + " no existe"));
+		List<Banner> bannerSinImagenes =  new ArrayList<>(pagina.getBannersPagina());//El constructor del arraylist admite un set
 		
-		return new ArrayList<>(bannerToBannerIdDTO(pagina.getBannersPagina())); //El constructor del arraylist admite un set
+		return bannerMapper.toDtoIdList(bannerSinImagenes);
 	}
 	
-	private List<BannerIdDTO> bannerToBannerIdDTO(Set<Banner> banners) {
-		return banners.stream()
-			.map(b -> new BannerIdDTO(b.getId()))
-			.toList();
-	}
-	
-	private BannerDTO bannerToBannerDTO(Banner banner, Long paginaId) {
-		return new BannerDTO(banner.getId(), banner.getTitular(), banner.getClaim(), banner.getLink(), paginaId);
-	}
 }

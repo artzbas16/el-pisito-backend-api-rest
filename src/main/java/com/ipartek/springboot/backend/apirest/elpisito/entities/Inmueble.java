@@ -84,7 +84,7 @@ public class Inmueble {
 	private Integer balcones;
 	
 	@Column
-	private Integer garages;
+	private Integer garajes;
 	
 	@Column
 	private Integer piscina; //1 o 0

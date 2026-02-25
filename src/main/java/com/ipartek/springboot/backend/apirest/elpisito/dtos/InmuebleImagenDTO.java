@@ -21,6 +21,7 @@ import lombok.ToString;
 public class InmuebleImagenDTO {
 	private Long id;
 	private String via;
+	private String claim;
 	private String nombreVia;
 	private String numero;
 	private String planta;
@@ -36,7 +37,7 @@ public class InmuebleImagenDTO {
 	private String calefaccion;
 	private Integer amueblado;
 	private Integer balcones;
-	private Integer garages;
+	private Integer garajes;
 	private Integer piscina;
 	private Integer trastero;
 	private Integer ascensor;
