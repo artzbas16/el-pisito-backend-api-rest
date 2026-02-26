@@ -38,12 +38,12 @@ public class ImagenRestController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(imagenService.store(file, entidadImagen, entidadId, alt));
 	}
 	
-	@GetMapping("/{tipo}/{entidadId}/{nombre}")
-	public ResponseEntity<Resource> rederizarImagen(@PathVariable EntidadImagen tipo, 
+	@GetMapping("/{nombreEntidadImagenMinusculas}/{entidadId}/{nombre}")
+	public ResponseEntity<Resource> rederizarImagen(@PathVariable String nombreEntidadImagenMinusculas, 
 													@PathVariable Long entidadId, 
 													@PathVariable String nombre){
-		
-		return imagenService.renderizarImagen(tipo, entidadId, nombre);
+		EntidadImagen entidadImagen = EntidadImagen.valueOf(nombreEntidadImagenMinusculas.toUpperCase());
+		return imagenService.renderizarImagen(entidadImagen, entidadId, nombre);
 		
 	}
 	

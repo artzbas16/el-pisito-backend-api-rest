@@ -1,6 +1,7 @@
 package com.ipartek.springboot.backend.apirest.elpisito.repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -20,5 +21,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	//https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
 	
 	List<Usuario> findByActivo(Integer activo); //Este metodo lo implementa Hibernate siguiendo las pautas 
+	
+	Optional<Usuario> findByNombre(String nombre);
 	
 }
