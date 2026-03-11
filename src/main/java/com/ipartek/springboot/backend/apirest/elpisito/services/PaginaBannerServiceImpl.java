@@ -40,7 +40,12 @@ public class PaginaBannerServiceImpl {
 		pagina.getBannersPagina().add(banner);//Aqui añadimos el banner
 		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD y se puede producir una excepcion (intentar crear una relacion que ya existe)
 		
-		return bannerMapper.toDto(banner, imagenService);
+		BannerImagenDTO elBanner = bannerMapper.toDto(banner);
+		
+		List<ImagenDTO> imagenesBanners = imagenService.getImagenes(EntidadImagen.BANNER, elBanner.getId());
+		
+		elBanner.setImagenes(imagenesBanners);
+		return elBanner;
 	}
 	
 	public BannerImagenDTO deleteBannerToPagina(Long paginaId, Long bannerId) {
@@ -50,7 +55,12 @@ public class PaginaBannerServiceImpl {
 		pagina.getBannersPagina().remove(banner);//Aqui eliminamos el banner
 		paginaRepository.save(pagina);//Es aqui donde hibernate establece la persistencia en la BBDD
 		
-		return bannerMapper.toDto(banner, imagenService);
+		BannerImagenDTO elBanner = bannerMapper.toDto(banner);
+		
+		List<ImagenDTO> imagenesBanners = imagenService.getImagenes(EntidadImagen.BANNER, elBanner.getId());
+		
+		elBanner.setImagenes(imagenesBanners);
+		return elBanner;
 	}
 	
 	//A partir de un id de Pagina devuelve todos los banners incluidos en esa Pagina
@@ -58,12 +68,19 @@ public class PaginaBannerServiceImpl {
 		Pagina pagina = paginaRepository.findById(paginaId).orElseThrow(() -> new EntityNotFoundException("La pagina con id " + paginaId + " no existe"));
 		List<Banner> bannerSinImagenes =  new ArrayList<>(pagina.getBannersPagina());//El constructor del arraylist admite un set
 		
-		List<Long> ids = bannerSinImagenes.stream()		
-				.map(Banner::getId)
-				.toList();	
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, ids);
+		List<BannerImagenDTO> dtos = bannerMapper.toDtoList(bannerSinImagenes);
 		
-		return bannerMapper.toDtoBulk(bannerSinImagenes, mapaImagenes);
+		List<Long> bannerIds = dtos.stream()
+			.map(BannerImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> bannersMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, bannerIds);
+		
+		for(BannerImagenDTO dto: dtos) {
+			dto.setImagenes(bannersMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	//A partir de un id de Pagina devuelve solo los ids de los banners incluidos en esa Pagina

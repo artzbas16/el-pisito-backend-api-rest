@@ -30,35 +30,58 @@ public class BannerServiceImpl {
 	public List<BannerImagenDTO> findAllBulk(){
 
 		List<Banner> banners = bannerRepository.findAll();
-		List<Long> ids = banners.stream()			
-			.map(Banner::getId)
-			.toList();											
+
+		List<BannerImagenDTO> dtos = bannerMapper.toDtoList(banners);
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, ids);
+		List<Long> bannerIds = dtos.stream()
+			.map(BannerImagenDTO::getId)
+			.toList();
 		
-		return bannerMapper.toDtoBulk(banners, mapaImagenes);
+		Map<Long, List<ImagenDTO>> bannersMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, bannerIds);
+		
+		for(BannerImagenDTO dto: dtos) {
+			dto.setImagenes(bannersMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public List<BannerImagenDTO> findAllActiveBulk(){
 
 		List<Banner> banners = bannerRepository.findByActivo(1);
-		List<Long> ids = banners.stream()		
-			.map(Banner::getId)
-			.toList();											
+		List<BannerImagenDTO> dtos = bannerMapper.toDtoList(banners);
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, ids); 
+		List<Long> bannerIds = dtos.stream()
+			.map(BannerImagenDTO::getId)
+			.toList();
 		
-		return bannerMapper.toDtoBulk(banners, mapaImagenes);
+		Map<Long, List<ImagenDTO>> bannersMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, bannerIds);
+		
+		for(BannerImagenDTO dto: dtos) {
+			dto.setImagenes(bannersMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public BannerImagenDTO save(Banner banner) {
 		Banner bannerSinImagenes = bannerRepository.save(banner);
-		return bannerMapper.toDto(bannerSinImagenes, imagenService);
+		BannerImagenDTO elBanner = bannerMapper.toDto(bannerSinImagenes);
+		
+		List<ImagenDTO> imagenesBanners = imagenService.getImagenes(EntidadImagen.BANNER, elBanner.getId());
+		
+		elBanner.setImagenes(imagenesBanners);
+		return elBanner;
 	}
 	
 	public BannerImagenDTO findById(Long id) {
 		Banner bannerSinImagenes = bannerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El banner con id " + id + " no existe"));
-		return bannerMapper.toDto(bannerSinImagenes, imagenService);
+		BannerImagenDTO elBanner = bannerMapper.toDto(bannerSinImagenes);
+		
+		List<ImagenDTO> imagenesBanners = imagenService.getImagenes(EntidadImagen.BANNER, elBanner.getId());
+		
+		elBanner.setImagenes(imagenesBanners);
+		return elBanner;
 	}
 	
 	public Banner deleteById(Long id) {

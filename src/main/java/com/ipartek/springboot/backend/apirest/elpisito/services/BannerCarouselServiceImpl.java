@@ -30,35 +30,64 @@ public class BannerCarouselServiceImpl {
 	public List<BannerCarouselImagenDTO> findAllBulk(){
 
 		List<BannerCarousel> bannersCarousel = bannerCarouselRepository.findAll();
-		List<Long> ids = bannersCarousel.stream()			
-			.map(BannerCarousel::getId)
-			.toList();											
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER_CAROUSEL, ids);
+		List<BannerCarouselImagenDTO> dtos = bannerCarouselMapper.toDtoList(bannersCarousel); //Un list de inmuebles sin imagenes
 		
-		return bannerCarouselMapper.toDtoBulk(bannersCarousel, mapaImagenes);
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
+		
+		List<Long> bannersCarouselIds = dtos.stream()
+			.map(BannerCarouselImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> bannersCarouselMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER_CAROUSEL, bannersCarouselIds);
+		
+		for(BannerCarouselImagenDTO dto: dtos) {
+			dto.setImagenes(bannersCarouselMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public List<BannerCarouselImagenDTO> findAllActiveBulk(){
 
 		List<BannerCarousel> bannersCarousel = bannerCarouselRepository.findByActivo(1);
-		List<Long> ids = bannersCarousel.stream()		
-			.map(BannerCarousel::getId)
-			.toList();											
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER_CAROUSEL, ids); 
+		List<BannerCarouselImagenDTO> dtos = bannerCarouselMapper.toDtoList(bannersCarousel); //Un list de inmuebles sin imagenes
 		
-		return bannerCarouselMapper.toDtoBulk(bannersCarousel, mapaImagenes);
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
+		
+		List<Long> bannersCarouselIds = dtos.stream()
+			.map(BannerCarouselImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> bannersCarouselMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER_CAROUSEL, bannersCarouselIds);
+		
+		for(BannerCarouselImagenDTO dto: dtos) {
+			dto.setImagenes(bannersCarouselMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public BannerCarouselImagenDTO save(BannerCarousel bannerCarousel) {
 		BannerCarousel bannerCarouselSinImagenes = bannerCarouselRepository.save(bannerCarousel);
-		return bannerCarouselMapper.toDto(bannerCarouselSinImagenes, imagenService);
+		
+		BannerCarouselImagenDTO elBannerCarousel = bannerCarouselMapper.toDto(bannerCarouselSinImagenes);
+		
+		List<ImagenDTO> imagenesBannerCarousel = imagenService.getImagenes(EntidadImagen.BANNER_CAROUSEL, elBannerCarousel.getId());
+		
+		elBannerCarousel.setImagenes(imagenesBannerCarousel);
+		return elBannerCarousel;
 	}
 	
 	public BannerCarouselImagenDTO findById(Long id) {
 		BannerCarousel bannerCarouselSinImagenes = bannerCarouselRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El bannerCarousel con id " + id + " no existe"));
-		return bannerCarouselMapper.toDto(bannerCarouselSinImagenes, imagenService);
+		BannerCarouselImagenDTO elBannerCarousel = bannerCarouselMapper.toDto(bannerCarouselSinImagenes);
+		
+		List<ImagenDTO> imagenesBannerCarousel = imagenService.getImagenes(EntidadImagen.BANNER_CAROUSEL, elBannerCarousel.getId());
+		
+		elBannerCarousel.setImagenes(imagenesBannerCarousel);
+		return elBannerCarousel;
 	}
 	
 	public BannerCarousel deleteById(Long id) {

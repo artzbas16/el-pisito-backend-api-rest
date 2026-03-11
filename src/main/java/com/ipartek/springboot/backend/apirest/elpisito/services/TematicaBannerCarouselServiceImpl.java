@@ -40,7 +40,12 @@ public class TematicaBannerCarouselServiceImpl {
 		tematica.getBannersCarousel().add(bannerCarousel);//Aqui añadimos el banner
 		tematicaRepository.save(tematica);//Es aqui donde hibernate establece la persistencia en la BBDD y se puede producir una excepcion (intentar crear una relacion que ya existe)
 		
-		return bannerCarouselMapper.toDto(bannerCarousel, imagenService);
+		BannerCarouselImagenDTO elBannerCarousel = bannerCarouselMapper.toDto(bannerCarousel);
+		
+		List<ImagenDTO> imagenesBannerCarousel = imagenService.getImagenes(EntidadImagen.BANNER_CAROUSEL, elBannerCarousel.getId());
+		
+		elBannerCarousel.setImagenes(imagenesBannerCarousel);
+		return elBannerCarousel;
 	}
 	
 	public BannerCarouselImagenDTO deleteBannerCarouselToTematica(Long tematicaId, Long bannerCarouselId) {
@@ -50,7 +55,12 @@ public class TematicaBannerCarouselServiceImpl {
 		tematica.getBannersCarousel().remove(bannerCarousel);//Aqui eliminamos el banner
 		tematicaRepository.save(tematica);//Es aqui donde hibernate establece la persistencia en la BBDD
 		
-		return bannerCarouselMapper.toDto(bannerCarousel, imagenService);
+		BannerCarouselImagenDTO elBannerCarousel = bannerCarouselMapper.toDto(bannerCarousel);
+		
+		List<ImagenDTO> imagenesBannerCarousel = imagenService.getImagenes(EntidadImagen.BANNER_CAROUSEL, elBannerCarousel.getId());
+		
+		elBannerCarousel.setImagenes(imagenesBannerCarousel);
+		return elBannerCarousel;
 	}
 	
 	//A partir de un id de Tematica devuelve todos los bannersCarousel incluidos en esa Tematica
@@ -58,12 +68,21 @@ public class TematicaBannerCarouselServiceImpl {
 		Tematica tematica = tematicaRepository.findById(tematicaId).orElseThrow(() -> new EntityNotFoundException("La tematica con id " + tematicaId + " no existe"));
 		List<BannerCarousel> bannerCarouselSinImagenes =  new ArrayList<>(tematica.getBannersCarousel());//El constructor del arraylist admite un set
 		
-		List<Long> ids = bannerCarouselSinImagenes.stream()		
-				.map(BannerCarousel::getId)
-				.toList();	
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER, ids);
+		List<BannerCarouselImagenDTO> dtos = bannerCarouselMapper.toDtoList(bannerCarouselSinImagenes); //Un list de inmuebles sin imagenes
 		
-		return bannerCarouselMapper.toDtoBulk(bannerCarouselSinImagenes, mapaImagenes);
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
+		
+		List<Long> bannersCarouselIds = dtos.stream()
+			.map(BannerCarouselImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> bannersCarouselMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.BANNER_CAROUSEL, bannersCarouselIds);
+		
+		for(BannerCarouselImagenDTO dto: dtos) {
+			dto.setImagenes(bannersCarouselMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	//A partir de un id de Tematica devuelve solo los ids de los bannersCarousel incluidos en esa Tematica
