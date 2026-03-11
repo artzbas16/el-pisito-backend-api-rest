@@ -44,12 +44,12 @@ public class PaginaBannerRestController {
 	}
 	
 	@GetMapping("/banners-pagina/{id}")
-	public ResponseEntity<List<BannerImagenDTO>> findBanners(@PathVariable Long id){
+	public ResponseEntity<List<BannerImagenDTO>> findBannersPagina(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.CREATED).body(paginaBannerService.findBannersPagina(id));
 	}
 	
-	@GetMapping("/bannersid-paginaa/{id}")
-	public ResponseEntity<List<BannerIdDTO>> findBannersId(@PathVariable Long id){
+	@GetMapping("/bannersid-pagina/{id}")
+	public ResponseEntity<List<BannerIdDTO>> findBannersIdPagina(@PathVariable Long id){
 		return ResponseEntity.status(HttpStatus.CREATED).body(paginaBannerService.findBannersIdPagina(id));
 	}
 	

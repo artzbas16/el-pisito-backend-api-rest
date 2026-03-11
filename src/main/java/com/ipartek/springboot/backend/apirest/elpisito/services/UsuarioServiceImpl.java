@@ -2,6 +2,7 @@ package com.ipartek.springboot.backend.apirest.elpisito.services;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ipartek.springboot.backend.apirest.elpisito.dtos.UsuarioDTO;
@@ -27,6 +28,9 @@ public class UsuarioServiceImpl{
 	
 	@Autowired
 	private UsuarioMapper usuarioMapper;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	public List<UsuarioDTO> findAll() {
 		List<Usuario> usuarios = usuarioRepository.findAll();
@@ -64,6 +68,8 @@ public class UsuarioServiceImpl{
 		//Si llega con Id estoy modificando 
 		t.setPasswordOpen(t.getPassword());
 		
+		t.setPassword(passwordEncoder.encode(t.getPassword()));
+		
 		Usuario usuario = usuarioRepository.save(t);
 		
 		//DataIntegrityViolationException (campos unique)
@@ -76,6 +82,13 @@ public class UsuarioServiceImpl{
 		// y el metodo, logicamente, no devuelve nada al controlador
 		
 		Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El usuario con id " + id + " no existe"));
+		
+		return usuarioMapper.toDto(usuario);
+	}
+	
+	//Este metodo lo usamos para busquedas por nombre general
+	public UsuarioDTO findByName(String nombre) {
+		Usuario usuario = usuarioRepository.findByNombre(nombre).orElseThrow(() -> new EntityNotFoundException("El usuario con nombre " + nombre + " no existe"));
 		
 		return usuarioMapper.toDto(usuario);
 	}

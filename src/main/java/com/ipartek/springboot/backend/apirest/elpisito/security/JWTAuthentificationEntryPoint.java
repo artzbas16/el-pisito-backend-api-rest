@@ -29,7 +29,7 @@ public class JWTAuthentificationEntryPoint implements AuthenticationEntryPoint{
 						HttpServletResponse response,
 						AuthenticationException authException) throws IOException, ServletException {
 
-		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Petición no autorizada. EL usuario necesita autentificarse");
+		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Petición no autorizada. El usuario necesita autentificarse");
 		
 	}
 	

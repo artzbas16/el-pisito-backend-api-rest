@@ -30,35 +30,65 @@ public class InmobiliariaServiceImpl{
 	public List<InmobiliariaImagenDTO> findAllBulk(){
 
 		List<Inmobiliaria> inmobiliarias = inmobiliariaRepository.findAll();
-		List<Long> ids = inmobiliarias.stream()			
-			.map(Inmobiliaria::getId)
-			.toList();											
+
+		List<InmobiliariaImagenDTO> dtos = inmobiliariaMapper.toDtoList(inmobiliarias); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, ids);
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmobiliariaMapper.toDtoBulk(inmobiliarias, mapaImagenes);
+		List<Long> inmobiliariaIds = dtos.stream()
+			.map(InmobiliariaImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmobiliariaImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public List<InmobiliariaImagenDTO> findAllActiveBulk(){
 
 		List<Inmobiliaria> inmobiliarias = inmobiliariaRepository.findByActivo(1);
-		List<Long> ids = inmobiliarias.stream()		
-			.map(Inmobiliaria::getId)
-			.toList();											
+
+		List<InmobiliariaImagenDTO> dtos = inmobiliariaMapper.toDtoList(inmobiliarias); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, ids); 
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmobiliariaMapper.toDtoBulk(inmobiliarias, mapaImagenes);
+		List<Long> inmobiliariaIds = dtos.stream()
+			.map(InmobiliariaImagenDTO::getId)
+			.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmobiliariaImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getId(), List.of()));
+		}
+		
+		return dtos;
+		
 	}
 	
 	public InmobiliariaImagenDTO save(Inmobiliaria inmobiliaria) {
 		Inmobiliaria inmobiliariaSinImagenes = inmobiliariaRepository.save(inmobiliaria);
-		return inmobiliariaMapper.toDto(inmobiliariaSinImagenes, imagenService);
+		
+		InmobiliariaImagenDTO laInmobiliaria = inmobiliariaMapper.toDto(inmobiliariaSinImagenes);
+		
+		List<ImagenDTO> imagenesInmobiliaria = imagenService.getImagenes(EntidadImagen.INMOBILIARIA, laInmobiliaria.getId());
+		
+		laInmobiliaria.setImagenes(imagenesInmobiliaria);
+		return laInmobiliaria;
 	}
 	
 	public InmobiliariaImagenDTO findById(Long id) {
 		Inmobiliaria inmobiliariaSinImagenes = inmobiliariaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("La inmobiliaria con id " + id + " no existe"));
-		return inmobiliariaMapper.toDto(inmobiliariaSinImagenes, imagenService);
+		InmobiliariaImagenDTO laInmobiliaria = inmobiliariaMapper.toDto(inmobiliariaSinImagenes);
+		
+		List<ImagenDTO> imagenesInmobiliaria = imagenService.getImagenes(EntidadImagen.INMOBILIARIA, laInmobiliaria.getId());
+		
+		laInmobiliaria.setImagenes(imagenesInmobiliaria);
+		return laInmobiliaria;
 	}
 	
 	public Inmobiliaria deleteById(Long id) {

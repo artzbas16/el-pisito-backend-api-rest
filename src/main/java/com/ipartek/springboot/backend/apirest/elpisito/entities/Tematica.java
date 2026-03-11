@@ -53,12 +53,16 @@ public class Tematica {
 			)
 	private Set<BannerCarousel> bannersCarousel; // (Que estan en esta Tematica)//Este es el mappedBy de BannerCarousel
 	
+	@Column 
+	private Integer actual;
+	
 	@Column
 	private Integer activo;
 	
 	@PrePersist	
 	public void prePersist() {
 		if (activo == null) activo = 1;
+		if (actual ==null) actual = 0;
 	}
 
 }

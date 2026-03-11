@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -38,10 +38,85 @@ public class SecurityConfig {
 									//Haciendo conbinaciones entre selector y autorizador crearemos autorizaciones "a la carta"
 									//Es obligatorio para Spring Security que en la BBDD este anotado el Rol como "ROLE_LOQUESEA"
 									//y en este metodo "LOQUESEA"
+									//auth.requestMatchers("/api/provincias").hasRole("USUARIO");
+									//auth.requestMatchers("/api/tipos").hasAnyRole("SUPERADMIN","ADMIN");
 			
-									//auth.requestMatchers("/api/provincias").hasRole("USER");
-			
-									auth.requestMatchers("/api/tipos").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.POST,"/api/inmueble").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/inmueble").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/inmuebles").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/inmueble/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/inmuebles-inmobiliaria/**").hasAnyRole("SUPER","ADMIN","USER");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/poblacion").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/poblacion").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/poblaciones").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/poblacion/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/poblaciones-activas").hasAnyRole("SUPER","ADMIN");//lo necesitamos para el finder
+							
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/provincia").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/provincia").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/provincias").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/provincia/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/provincias-activas").hasAnyRole("SUPERADMIN","ADMIN");
+						
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/tipo").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/tipo").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/tipos").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/tipo/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/tipos-activos").hasAnyRole("SUPER","ADMIN");//lo necesitamos para el finder
+						
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/operacion").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/operacion").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/operaciones").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/operacion/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/operaciones-activas").hasAnyRole("SUPER","ADMIN");//lo necesitamos para el finder
+									
+									
+									//el POST no existe porque no podemos restringir que una persona se de de alta...
+									auth.requestMatchers(HttpMethod.PUT,"/api/usuario").hasRole("SUPERADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/usuario/**").hasRole("SUPER");
+									auth.requestMatchers(HttpMethod.GET,"/api/usuarios").hasRole("SUPERADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/usuario/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/usuarios-activos").hasRole("SUPERADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/tematica").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/tematica").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/tematicas").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/tematicas-activas").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/tematica/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/tematica/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/actualizar-tematica/**").hasRole("SUPERADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/banner").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/banner").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/banners").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/banner/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/banner/**").hasAnyRole("SUPERADMIN","ADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/banner-carousel").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/banner-carousel").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/banners-carousel").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/banner-carousel/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/banners-carousel/**").hasAnyRole("SUPERADMIN","ADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/pagina").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.PUT,"/api/pagina").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/paginas").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/pagina/**").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.GET,"/api/paginas/**").hasAnyRole("SUPERADMIN","ADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/pagina-banner").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/pagina-banner").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/banners-pagina/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/bannersid-pagina/**").hasAnyRole("SUPERADMIN","ADMIN");
+									
+									auth.requestMatchers(HttpMethod.POST,"/api/tematica-bannercarousel").hasAnyRole("SUPERADMIN","ADMIN");
+									auth.requestMatchers(HttpMethod.DELETE,"/api/tematica-bannercarousel").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/bannerscarousel-tematica/**").hasAnyRole("SUPERADMIN","ADMIN");
+									//auth.requestMatchers(HttpMethod.GET,"/api/bannerscarouselid-tematica/**").hasAnyRole("SUPERADMIN","ADMIN");
 									
 									//Esta linea de codigo se suele poner siempre al final
 									//porque significa que todo lo que no hayamos "restringido arriba" esta permitido
@@ -76,8 +151,8 @@ public class SecurityConfig {
 		//Request -> jwtFilter -> UsernamePasswordAuthenticationFilter -> resto de filtros
 		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);//Esta linea es muy comun en API Rest con JWT
 		
-		http.cors(Customizer.withDefaults());
-		//http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+		//http.cors(Customizer.withDefaults());
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		
 		//El CSRF (Cross Site Request Forgery) o falsificacion en peticiones de sitios cruzados,
 		//es un tipo de EXPLOIT malicioso de un sitio Web en el que
@@ -112,7 +187,7 @@ public class SecurityConfig {
 		config.setAllowedOrigins(List.of("http://localhost:4200"));//Dominio desde donde se sirve la Web y otros dominios que nos interesan
 		config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE")); // Solo podemos utilizar en la peticiones los "verbos" (metodos) especificados
 		config.setAllowedHeaders(List.of("*")); //Permitimos todos los headers (es importante por que aqui llegan los Tokens)
-		config.setAllowCredentials(true);
+		config.setAllowCredentials(true);//Es fundamental para que CORS deje que se inicie el proceso de logeo
 		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);

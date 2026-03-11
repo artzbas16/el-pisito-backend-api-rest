@@ -47,41 +47,90 @@ public class InmuebleServiceImpl{
 
 	public List<InmuebleImagenDTO> findAllBulk(){
 		//Conseguimos todos los inmuebles (findAll)
-		List<Inmueble> inmuebles = inmuebleRepository.findAll();//1) Conseguimos todos los muebles (findAll)	
-		List<Long> ids = inmuebles.stream() //2)Extrae los ids de todos los inmuebles			
-			.map(Inmueble::getId)
-			.toList();											
+		List<Inmueble> inmuebles = inmuebleRepository.findAll();
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, ids); //3)Llamamos imagenService para traer todos los ids de una vez
-		//4) Tenemos un Map con unos ids asociados a su list de imagenes (en este caso todos los INMUEBLES)
+		List<InmuebleImagenDTO> dtos = inmuebleMapper.toDtoList(inmuebles); //Un list de inmuebles sin imagenes
 		
-		//5) Pasamos la lista de inmuebles y el mapa de imagenes a inmuebleMapper.toDtoBulk en InmuebleMapper
-		return inmuebleMapper.toDtoBulk(inmuebles, mapaImagenes);//toDtoBulk() combina los dtos con las imagenes 
-		//y devuelve la lista final de inmuebles con sus imagenes
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
+		
+		List<Long> inmuebleIds = dtos.stream()
+			.map(InmuebleImagenDTO::getId)
+			.toList();
+		
+		List<Long> inmobiliariaIds = dtos.stream()
+										.map(dto -> dto.getInmobiliaria().getId())
+										.distinct() //porque varios inmuebles puedes pertenecer a la misma inmobiliaria
+										.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmuebleMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, inmuebleIds);
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmuebleImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmuebleMap.getOrDefault(dto.getId(), List.of()));
+			dto.getInmobiliaria().setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getInmobiliaria().getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public List<InmuebleImagenDTO> findAllActiveBulk(){
 
 		List<Inmueble> inmuebles = inmuebleRepository.findByActivo(1);
-		List<Long> ids = inmuebles.stream()		
-			.map(Inmueble::getId)
-			.toList();											
+
+		List<InmuebleImagenDTO> dtos = inmuebleMapper.toDtoList(inmuebles); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, ids); 
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmuebleMapper.toDtoBulk(inmuebles, mapaImagenes);
+		List<Long> inmuebleIds = dtos.stream()
+			.map(InmuebleImagenDTO::getId)
+			.toList();
+		
+		List<Long> inmobiliariaIds = dtos.stream()
+										.map(dto -> dto.getInmobiliaria().getId())
+										.distinct() //porque varios inmuebles puedes pertenecer a la misma inmobiliaria
+										.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmuebleMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, inmuebleIds);
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmuebleImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmuebleMap.getOrDefault(dto.getId(), List.of()));
+			dto.getInmobiliaria().setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getInmobiliaria().getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public List<InmuebleImagenDTO> findAllPortadaBulk(){
 
 		List<Inmueble> inmuebles = inmuebleRepository.findByActivoAndPortada(1, 1);
-		List<Long> ids = inmuebles.stream()		
-			.map(Inmueble::getId)
-			.toList();											
+
+		List<InmuebleImagenDTO> dtos = inmuebleMapper.toDtoList(inmuebles); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, ids); 
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmuebleMapper.toDtoBulk(inmuebles, mapaImagenes);
+		List<Long> inmuebleIds = dtos.stream()
+			.map(InmuebleImagenDTO::getId)
+			.toList();
+		
+		List<Long> inmobiliariaIds = dtos.stream()
+										.map(dto -> dto.getInmobiliaria().getId())
+										.distinct() //porque varios inmuebles puedes pertenecer a la misma inmobiliaria
+										.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmuebleMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, inmuebleIds);
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmuebleImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmuebleMap.getOrDefault(dto.getId(), List.of()));
+			dto.getInmobiliaria().setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getInmobiliaria().getId(), List.of()));
+		}
+		
+		return dtos;
+		
 	}
 	
 	public List<InmuebleImagenDTO> findInmueblesInmobiliariaBulk(Long id){
@@ -89,13 +138,31 @@ public class InmuebleServiceImpl{
 		Inmobiliaria inmobiliaria = inmobiliariaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("La inmobiliaria con id " + id + " no existe"));
 
 		List<Inmueble> inmuebles = inmuebleRepository.findByInmobiliaria(inmobiliaria);
-		List<Long> ids = inmuebles.stream()		
-			.map(Inmueble::getId)
-			.toList();											
+
+		List<InmuebleImagenDTO> dtos = inmuebleMapper.toDtoList(inmuebles); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, ids); 
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmuebleMapper.toDtoBulk(inmuebles, mapaImagenes);
+		List<Long> inmuebleIds = dtos.stream()
+			.map(InmuebleImagenDTO::getId)
+			.toList();
+		
+		List<Long> inmobiliariaIds = dtos.stream()
+										.map(dto -> dto.getInmobiliaria().getId())
+										.distinct() //porque varios inmuebles puedes pertenecer a la misma inmobiliaria
+										.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmuebleMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, inmuebleIds);
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmuebleImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmuebleMap.getOrDefault(dto.getId(), List.of()));
+			dto.getInmobiliaria().setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getInmobiliaria().getId(), List.of()));
+		}
+		
+		return dtos;
+		
 	}
 	
 	public List<InmuebleImagenDTO> finderBulk(Long tipoId, Long poblacionId, Long operacionId){
@@ -108,23 +175,59 @@ public class InmuebleServiceImpl{
 		
 		List<Inmueble> inmuebles = inmuebleRepository.findByTipoAndPoblacionAndOperacionAndActivo(tipo, poblacion, operacion, 1);
 
-		List<Long> ids = inmuebles.stream()		
-			.map(Inmueble::getId)
-			.toList();											
+		List<InmuebleImagenDTO> dtos = inmuebleMapper.toDtoList(inmuebles); //Un list de inmuebles sin imagenes
 		
-		Map<Long, List<ImagenDTO>> mapaImagenes = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, ids); 
+		//Para crear un bulk necesitamos los id de los inmuebles que esten en dtos
 		
-		return inmuebleMapper.toDtoBulk(inmuebles, mapaImagenes);
+		List<Long> inmuebleIds = dtos.stream()
+			.map(InmuebleImagenDTO::getId)
+			.toList();
+		
+		List<Long> inmobiliariaIds = dtos.stream()
+										.map(dto -> dto.getInmobiliaria().getId())
+										.distinct() //porque varios inmuebles puedes pertenecer a la misma inmobiliaria
+										.toList();
+		
+		Map<Long, List<ImagenDTO>> imagenesInmuebleMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMUEBLE, inmuebleIds);
+		
+		Map<Long, List<ImagenDTO>> imagenesInmobiliariaMap = imagenService.getImagenesPorEntidadBulk(EntidadImagen.INMOBILIARIA, inmobiliariaIds);
+		
+		for(InmuebleImagenDTO dto: dtos) {
+			dto.setImagenes(imagenesInmuebleMap.getOrDefault(dto.getId(), List.of()));
+			dto.getInmobiliaria().setImagenes(imagenesInmobiliariaMap.getOrDefault(dto.getInmobiliaria().getId(), List.of()));
+		}
+		
+		return dtos;
 	}
 	
 	public InmuebleImagenDTO save(Inmueble inmueble) {
 		Inmueble inmuebleSinImagenes = inmuebleRepository.save(inmueble);
-		return inmuebleMapper.toDto(inmuebleSinImagenes, imagenService);
+		
+		InmuebleImagenDTO elInmueble = inmuebleMapper.toDto(inmuebleSinImagenes);
+		
+		List<ImagenDTO> imagenesInmueble = imagenService.getImagenes(EntidadImagen.INMUEBLE, elInmueble.getId());
+		
+		List<ImagenDTO> imagenesInmobiliaria = imagenService.getImagenes(EntidadImagen.INMOBILIARIA, elInmueble.getInmobiliaria().getId());
+		
+		elInmueble.setImagenes(imagenesInmueble);
+		elInmueble.getInmobiliaria().setImagenes(imagenesInmobiliaria);
+		
+		return elInmueble;
 	}
 	
 	public InmuebleImagenDTO findById(Long id) {
 		Inmueble inmuebleSinImagenes = inmuebleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El inmueble con id " + id + " no existe"));
-		return inmuebleMapper.toDto(inmuebleSinImagenes, imagenService);
+
+		InmuebleImagenDTO elInmueble = inmuebleMapper.toDto(inmuebleSinImagenes);
+		
+		List<ImagenDTO> imagenesInmueble = imagenService.getImagenes(EntidadImagen.INMUEBLE, elInmueble.getId());
+		
+		List<ImagenDTO> imagenesInmobiliaria = imagenService.getImagenes(EntidadImagen.INMOBILIARIA, elInmueble.getInmobiliaria().getId());
+		
+		elInmueble.setImagenes(imagenesInmueble);
+		elInmueble.getInmobiliaria().setImagenes(imagenesInmobiliaria);
+		
+		return elInmueble;
 	}
 	
 	public InmuebleImagenDTO deleteById(Long id) {
@@ -132,7 +235,17 @@ public class InmuebleServiceImpl{
 		Inmueble inmueble = inmuebleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("El inmueble con id " + id + " no existe"));
 		
 		inmuebleRepository.deleteById(id);
-		return inmuebleMapper.toDto(inmueble, imagenService);
+
+		InmuebleImagenDTO elInmueble = inmuebleMapper.toDto(inmueble);
+		
+		List<ImagenDTO> imagenesInmueble = imagenService.getImagenes(EntidadImagen.INMUEBLE, elInmueble.getId());
+		
+		List<ImagenDTO> imagenesInmobiliaria = imagenService.getImagenes(EntidadImagen.INMOBILIARIA, elInmueble.getInmobiliaria().getId());
+		
+		elInmueble.setImagenes(imagenesInmueble);
+		elInmueble.getInmobiliaria().setImagenes(imagenesInmobiliaria);
+		
+		return elInmueble;
 	}	
 	
 

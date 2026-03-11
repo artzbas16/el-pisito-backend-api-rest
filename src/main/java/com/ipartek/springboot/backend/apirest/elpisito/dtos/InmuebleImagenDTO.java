@@ -2,7 +2,6 @@ package com.ipartek.springboot.backend.apirest.elpisito.dtos;
 
 import java.util.List;
 
-import com.ipartek.springboot.backend.apirest.elpisito.entities.Inmobiliaria;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Operacion;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Poblacion;
 import com.ipartek.springboot.backend.apirest.elpisito.entities.Tipo;
@@ -48,7 +47,7 @@ public class InmuebleImagenDTO {
 	private Tipo tipo;
 	private Operacion operacion;
 	private Poblacion poblacion;
-	private Inmobiliaria inmobiliaria;
+	private InmobiliariaImagenDTO inmobiliaria;
 	private Integer activo;
 	
 	private List<ImagenDTO> imagenes;

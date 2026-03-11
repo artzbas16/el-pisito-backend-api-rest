@@ -53,5 +53,16 @@ public class TematicaRestController {
 	public ResponseEntity<Tematica> deleteById(@PathVariable Long id) {
 		return ResponseEntity.ok(tematicaService.deleteById(id));
 	}
+	
+	//Mediante este endpoint, vamos a poner automaticamente los banners de una tematica en el carousel home de Angular
+	@PutMapping("/actualizar-tematica/{id}")
+	public ResponseEntity<Tematica> actualizarTematica(@PathVariable Long id) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(tematicaService.actualizarTematica(id));//201
+	}
+	
+	@GetMapping("/tematica-actual")
+	public ResponseEntity<Tematica> findActual(){		
+		return ResponseEntity.ok(tematicaService.findActual()); //200
+	}
 
 }

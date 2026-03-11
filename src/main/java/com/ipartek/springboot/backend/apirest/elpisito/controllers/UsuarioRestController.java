@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,6 +76,55 @@ public class UsuarioRestController {
 	}
 	
 	
+	/*@PostMapping("/me")
+	public ResponseEntity<UsuarioDTO> me(@AuthenticationPrincipal UserDetails usuario){
+		
+		//TAMBIEN PODEMOS HACERLO DE ESTA FORMA (ATENCION PORQUE EL OBJETO QUE RECIBIMOS NO ES UN OBJETO Usuario
+	}*/
+	//Devuelve un objeto Map o un UsuarioDTO
+	@GetMapping("/me")
+	public ResponseEntity<UsuarioDTO> me(Authentication authentication){
+		//Spring Security inyecta automaticamente el objeto Authentication del Usuario que está haciendo la peticion
+		//¿Como sabe Spring Security quien esta llamando al EndPoint "me"?
+		
+		//Antes (incluso) de que el metodo "me" se ejecute, que ocurre:
+		//1) El request pasa primero por los filtros de Spring Security
+		//Ya sabemos que Spring Security tiene una cadena de filtros (Security Filter Chain) que intercepta la peticion Http.
+		//Estos filtros leen el token, lo validan y si es valido se crea un objeto Authentification y lo guardan en el Security COntext
+		
+		//Request -> Filters de Spring Security -> Authentification -> Security Context -> Controller
+		
+		//¿Que hace Spring "por debajo"?
+		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		//¿Que contiene Authentication?
+		//authentication.getName() --> username
+		//authentication.getPrincipal() --> el usuario (UserDetails)
+		//authentication.getAuthorities() --> rol o roles (Realmente roles por que es un List) (ROLE_ADMIN, ROLE_USER, ROLE_SUPERADMIN)
+		//authentication.isAuthenticated() --> true o false
+		
+		//¿Que sucede si no hay authentication?
+		//authentication sera null
+		//y el End Point "me" ni siquiera va a ser llamado, puesto que ya habremos lanzado con 401 (o un 403)
+		
+		//RESUMEN
+		//1) Spring Security intercepta la request con filtros
+		//2) Autentifica (token recibido) (implica que sé cual es el usuario)
+		//3) Guarda el usuario en el Security Context
+		//4) Lo inyecta 
+		
+		if (authentication == null || !authentication.isAuthenticated()) {
+			
+			/*Map<String, String> response = new HashMap<>();
+			response.put("mensaje", "El usuario no está autentificado");
+			
+			return ResponseEntity.ok().body(new JWTResponse(response));//200*/
+			return ResponseEntity.ok(new UsuarioDTO(null, null, null, null));
+			
+		}
+		//Si llegamos aquí es que el objeto authentication no es null o el usuario esta autentificado
+		return ResponseEntity.ok(usuarioService.findByName(authentication.getName()));//200
+	}
 	
 	
 }
