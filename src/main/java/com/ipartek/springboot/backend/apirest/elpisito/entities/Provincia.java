@@ -26,7 +26,7 @@ import lombok.ToString;
 //@SuperBuilder
 @ToString
 @Entity 
-@Table(name="provincia")
+@Table(name="provincias")
 public class Provincia {
 	
 	@Id

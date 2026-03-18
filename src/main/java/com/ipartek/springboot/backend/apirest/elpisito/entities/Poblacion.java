@@ -46,7 +46,7 @@ public class Poblacion {
 	
 	//Generalmente es en el @ManyToOne donde se suele encontrarse el @JoinColumn
 	@ManyToOne //Muchas poblaciones pueden pertenecer a una provincia
-	@JoinColumn(name="provincias") //Este es el nombre de la columna que aparecerá en la base de datos
+	@JoinColumn(name="provincia") //Este es el nombre de la columna que aparecerá en la base de datos
 	private Provincia provincia;//este es el MappedBy de Provincia
 	
 	@JsonIgnore

@@ -35,6 +35,10 @@ public class PaginaServiceImpl implements GeneralService<Pagina>{
 	public Pagina findById(Long id) {
 		return paginaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("La página con id " + id + " no existe"));
 	}
+	
+	public Pagina findByNombre(String nombre) {
+		return paginaRepository.findFirstByNombre(nombre).orElseThrow(() -> new EntityNotFoundException("La página con nombre " + nombre + " no existe"));
+	}
 
 	@Override
 	public Pagina deleteById(Long id) {

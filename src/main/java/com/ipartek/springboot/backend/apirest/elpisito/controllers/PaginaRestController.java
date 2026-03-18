@@ -39,6 +39,11 @@ public class PaginaRestController {
 		return ResponseEntity.status(HttpStatus.OK).body(paginaService.findById(id));//200
 	}
 	
+	@GetMapping("/pagina-nombre/{nombre}")
+	public ResponseEntity<Pagina> findByNombre(@PathVariable String nombre) {
+		return ResponseEntity.status(HttpStatus.OK).body(paginaService.findByNombre(nombre));//200
+	}
+	
 	@PostMapping("/pagina")
 	public ResponseEntity<Pagina> create(@RequestBody Pagina pagina) {
 		return ResponseEntity.status(HttpStatus.CREATED).body(paginaService.save(pagina));//201
