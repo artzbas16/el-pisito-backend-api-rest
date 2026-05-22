@@ -184,7 +184,7 @@ public class SecurityConfig {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:4200"));//Dominio desde donde se sirve la Web y otros dominios que nos interesan
+		config.setAllowedOrigins(List.of("https://el-pisito-omega.vercel.app/"));//Dominio desde donde se sirve la Web y otros dominios que nos interesan
 		config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE")); // Solo podemos utilizar en la peticiones los "verbos" (metodos) especificados
 		config.setAllowedHeaders(List.of("*")); //Permitimos todos los headers (es importante por que aqui llegan los Tokens)
 		config.setAllowCredentials(true);//Es fundamental para que CORS deje que se inicie el proceso de logeo
